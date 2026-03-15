@@ -1,0 +1,116 @@
+---
+title: 'Content collections'
+description: 'How project entries are defined, validated, and queried using Astro content collections.'
+---
+
+The portfolio uses Astro's content collections API to manage project data. Content is stored as Markdown files in `src/content/projects/`, validated at build time with a Zod schema, and queried in components using `getCollection`.
+
+## How it works
+
+<Steps>
+  <Step title="Define the schema">
+    `src/content/config.ts` declares the `projects` collection and its Zod schema. Astro uses this to type-check every `.md` file at build time.
+  </Step>
+  <Step title="Add content entries">
+    Create a `.md` file in `src/content/projects/`. The frontmatter must satisfy the schema; the body content is optional and not currently rendered.
+  </Step>
+  <Step title="Query the collection">
+    In any `.astro` component, call `getCollection('projects')` to get a typed array of all validated entries.
+  </Step>
+</Steps>
+
+## Collection schema
+
+**File:** `src/content/config.ts`
+
+```typescript
+import { defineCollection, z } from 'astro:content';
+
+const projectsCollection = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.string().or(z.date()).transform((val) => new Date(val)),
+    updatedDate: z.string().optional().transform((str) => (str ? new Date(str) : undefined)),
+    heroImage: z.string().optional(),
+    tag: z.string().optional(),
+    url: z.string().optional(),
+  }),
+});
+
+export const collections = { 'projects': projectsCollection };
+```
+
+## Frontmatter fields
+
+<ParamField path="title" type="string" required>
+  Project name. Displayed as the card heading in the Projects section.
+</ParamField>
+
+<ParamField path="description" type="string" required>
+  Short description of the project. Used as the `alt` attribute on the hero image in `Card.astro`.
+</ParamField>
+
+<ParamField path="pubDate" type="string | Date" required>
+  Publication date. Accepts an ISO date string (`"2023-10-25"`) or a `Date` object. Transformed to a `Date` instance by the schema.
+</ParamField>
+
+<ParamField path="updatedDate" type="string">
+  Last updated date. Optional ISO date string. Transformed to a `Date` instance when present.
+</ParamField>
+
+<ParamField path="heroImage" type="string">
+  Path to the project's cover image relative to the `public/` directory (e.g. `"/Edudu.png"`). Passed to `Card.astro` as the `src` prop.
+</ParamField>
+
+<ParamField path="tag" type="string">
+  Category or role label displayed below the project title in the card (e.g. `"Web developher"`).
+</ParamField>
+
+<ParamField path="url" type="string">
+  External URL for the live project. Used as the `href` of the card link in `Card.astro`.
+</ParamField>
+
+## Example entry
+
+**File:** `src/content/projects/Edudu.md`
+
+```markdown
+---
+title: 'Edudu'
+description: 'Plataforma educativa para niños'
+pubDate: '2023-10-25'
+heroImage: '/Edudu.png'
+tag: 'Web developher'
+url: 'https://edudu-platform.netlify.app/'
+---
+```
+
+<Tip>
+To add a new project, duplicate `Edudu.md`, rename the file, and update the frontmatter fields. No code changes are required — `Projects.astro` will pick it up automatically on the next build.
+</Tip>
+
+## Querying projects in a component
+
+`Projects.astro` uses `getCollection` to load all entries and passes the data fields directly to `Card.astro`:
+
+```astro
+---
+import { getCollection } from 'astro:content';
+import Card from "./Card.astro";
+const projects = await getCollection('projects');
+---
+<section id="projects">
+    {projects.map((project: any) => (
+        <Card
+            src={project.data.heroImage}
+            description={project.data.description}
+            title={project.data.title}
+            tag={project.data.tag}
+            url={project.data.url}
+        />
+    ))}
+</section>
+```
+
+`project.data` contains all validated frontmatter fields typed according to the Zod schema. The Markdown body (`project.body`) is available but not currently used in any component.

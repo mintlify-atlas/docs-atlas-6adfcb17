@@ -1,0 +1,157 @@
+---
+title: 'Layout'
+description: 'How the portfolio pages are structured, how to add new pages, and how to modify the header and navigation.'
+---
+
+## Page layout
+
+`src/layouts/Layout.astro` is the shared wrapper used by every page. It provides:
+
+- The full HTML document structure (`<html>`, `<head>`, `<body>`)
+- Bootstrap 5.3 CSS and JS loaded via CDN
+- The Onest Google Font `<link>` tag
+- Global CSS custom properties and animation styles
+- A centered `<main>` container with `max-width: 650px`
+
+All page content is placed inside that `<main>` element through Astro's `<slot />`.
+
+## Page composition
+
+Pages are built by importing and composing components inside the `Layout` wrapper. Both existing pages follow the same pattern.
+
+**`src/pages/index.astro`** — the home page:
+
+```astro src/pages/index.astro
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Header from "../components/Header.astro";
+import Projects from "../components/Projects.astro";
+import Footer from "../components/Footer.astro";
+---
+<Layout title="Ronald Santana - Portfolio">
+  <Nav />
+  <Header />
+  <Projects />
+  <Footer />
+</Layout>
+```
+
+Component order: `Layout → Nav + Header + Projects + Footer`
+
+**`src/pages/projects.astro`** — the full projects listing:
+
+```astro src/pages/projects.astro
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Projects from "../components/Projects.astro";
+import Footer from "../components/Footer.astro";
+---
+<Layout title="Portfolio - Ronald Santana" theme="dark">
+  <Nav />
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+      <li class="breadcrumb-item active">Proyectos</li>
+    </ol>
+  </nav>
+  <Projects />
+  <Footer />
+</Layout>
+```
+
+Component order: `Layout → Nav + Breadcrumb + Projects + Footer`
+
+## Adding a new page
+
+Astro uses file-based routing: every `.astro` file in `src/pages/` automatically becomes a URL path.
+
+<Steps>
+  <Step title="Create an Astro file in src/pages/">
+    The filename becomes the URL. For example, `src/pages/about.astro` is served at `/about`.
+
+    ```
+    src/pages/about.astro
+    ```
+  </Step>
+
+  <Step title="Import Layout, Nav, and Footer">
+    Start the file with the component imports:
+
+    ```astro src/pages/about.astro
+    ---
+    import Layout from "../layouts/Layout.astro";
+    import Nav from "../components/Nav.astro";
+    import Footer from "../components/Footer.astro";
+    ---
+    ```
+  </Step>
+
+  <Step title="Compose the page">
+    Wrap your content in `Layout` and add `Nav` at the top and `Footer` at the bottom:
+
+    ```astro src/pages/about.astro
+    ---
+    import Layout from "../layouts/Layout.astro";
+    import Nav from "../components/Nav.astro";
+    import Footer from "../components/Footer.astro";
+    ---
+    <Layout title="About - Ronald Santana">
+      <Nav />
+      <main>
+        <h1>About</h1>
+        <p>Your content goes here.</p>
+      </main>
+      <Footer />
+    </Layout>
+    ```
+
+    Add your content between `<Nav />` and `<Footer />`.
+  </Step>
+
+  <Step title="Visit the new route">
+    Start or restart the dev server and navigate to the new URL:
+
+    ```bash
+    npm run dev
+    ```
+
+    The page is now available at `http://localhost:4321/about`.
+  </Step>
+</Steps>
+
+## Modifying the header
+
+The header is defined in `src/components/Header.astro`. Edit this file to update the developer name, bio paragraph, or list of skills.
+
+```astro src/components/Header.astro
+<header class="mb-lg-5 py-5 animate-on-load animate-delay-2">
+    <h1 class="fs-6 mb-3">Web Developer <br> <strong class="fs-2">Ronald Santana</strong></h1>
+    <p class="mb-3">Prospero en entornos que combinan diseño y desarrollo, combinando la estética con la excelencia técnica para crear Sitios web y aplicaciones de alto impacto. Conocimientos en Usar <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong>. <strong>Astro</strong>, <strong>Bootstrap</strong>, <strong>WordPress</strong>.</p>
+</header>
+```
+
+- Update the `<strong class="fs-2">` text to change the developer name.
+- Edit the `<p>` content to update the bio and skills.
+
+## Modifying the navigation
+
+The top navigation bar is defined in `src/components/Nav.astro`:
+
+```astro src/components/Nav.astro
+<nav class="d-flex align-items-center justify-content-between py-4 mb-md-5 mb-lg-5 animate-on-load animate-delay-1">
+    <a href="/">
+        <img src="/favicon.svg" alt="" />
+    </a>
+</nav>
+<style>
+  img { width: 50px; height: 50px; }
+</style>
+```
+
+The logo currently points to `/favicon.svg` in the `public/` directory. To use a different logo, place your image file in `public/` and update the `src` attribute on the `<img>` tag.
+
+<Note>
+The `Nav` component uses the `.animate-on-load.animate-delay-1` classes, so it fades in first before the header (which uses `.animate-delay-2`). Maintain this ordering when adding new animated elements to keep the staggered entrance effect.
+</Note>

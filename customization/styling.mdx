@@ -1,0 +1,125 @@
+---
+title: 'Styling'
+description: 'How to customize colors, typography, animations, and Bootstrap in the portfolio.'
+---
+
+All global styles live in the `<style is:global>` block inside `src/layouts/Layout.astro`. Changing values there affects every page on the site.
+
+## CSS variables
+
+Two CSS custom properties are defined in `:root` and control the site's core color palette:
+
+```css src/layouts/Layout.astro
+:root {
+  --primary: #1E1E1E;
+  --bg: #f1f1f1;
+}
+```
+
+| Variable | Default | Usage |
+|----------|---------|-------|
+| `--primary` | `#1E1E1E` | Applied to all `<a>` elements via `a { color: var(--primary) !important; }`. |
+| `--bg` | `#f1f1f1` | Applied to `body` as the page background color. |
+
+To change the site colors, update the hex values in the `:root` block:
+
+```css
+:root {
+  --primary: #2563EB;
+  --bg: #ffffff;
+}
+```
+
+## Typography
+
+The site uses the **Onest** typeface, loaded from Google Fonts. The `<link>` tag is placed in the `<head>` of `Layout.astro`:
+
+```html src/layouts/Layout.astro
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet">
+```
+
+The font is applied globally via the `body` rule:
+
+```css
+body {
+  font-family: "Onest", sans-serif;
+}
+```
+
+To swap fonts, replace the Google Fonts `<link>` href with the URL for your chosen typeface, then update the `font-family` value in the `body` rule to match.
+
+## Animation system
+
+The portfolio uses two distinct animation patterns. They are independent — use whichever suits the element.
+
+<Note>
+**Page load animations** run once when the page first renders. **Scroll animations** trigger each time an element enters the viewport as the user scrolls.
+</Note>
+
+### Page load animations
+
+Apply the `.animate-on-load` class to any element to make it fade up when the page loads. Add a stagger delay class to sequence multiple elements:
+
+```css src/layouts/Layout.astro
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-on-load {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-delay-1 { animation-delay: 0.1s; }
+.animate-delay-2 { animation-delay: 0.2s; }
+.animate-delay-3 { animation-delay: 0.3s; }
+.animate-delay-4 { animation-delay: 0.4s; }
+```
+
+The `Nav` component uses `.animate-delay-1` and the `Header` component uses `.animate-delay-2`, so they stagger into view sequentially.
+
+### Scroll animations
+
+Apply the `.fade-in-up` class to any element you want to animate as it scrolls into view. An `IntersectionObserver` script adds the `.visible` class when the element enters the viewport:
+
+```css src/layouts/Layout.astro
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+```
+
+## Bootstrap customization
+
+Bootstrap 5.3 is loaded via CDN in `Layout.astro`. To override Bootstrap's default values, add CSS custom property overrides to the global style block in `Layout.astro` before the Bootstrap import, or target Bootstrap's own CSS variables on `:root`:
+
+```css
+:root {
+  --bs-body-font-family: "Onest", sans-serif;
+  --bs-primary: #1E1E1E;
+}
+```
+
+<Tip>
+Bootstrap 5.3 exposes most of its design tokens as CSS custom properties. You can override them in the `:root` block in `Layout.astro` without modifying any Bootstrap source files.
+</Tip>
+
+## Content max width
+
+The `<main>` element constrains the readable content width across all pages:
+
+```css src/layouts/Layout.astro
+main {
+  max-width: 650px;
+  height: 100%;
+}
+```
+
+Increase or decrease the `max-width` value to adjust how wide content appears on large screens.

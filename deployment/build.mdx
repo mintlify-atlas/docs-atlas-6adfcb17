@@ -1,0 +1,103 @@
+---
+title: 'Build'
+description: 'How to build the rsantana portfolio for production using Astro.'
+---
+
+Running a production build compiles every page to static HTML, optimizes assets, and outputs everything to the `dist/` folder ready for deployment.
+
+## How Astro builds
+
+When you run `npm run build`, Astro executes `astro build`. Because `astro.config.mjs` uses the default configuration with no server adapter, Astro pre-renders every route to plain HTML at build time. The result is a fully static site — no Node.js server is needed to host it.
+
+During the build, Astro:
+
+- Type-checks the project
+- Validates content collection frontmatter against the Zod schema in `src/content/config.ts`
+- Generates optimized HTML, CSS, and JavaScript
+- Copies static assets from `public/` to `dist/`
+
+## Build command
+
+<Steps>
+  <Step title="Install dependencies">
+    Make sure all dependencies are installed before building.
+
+    <CodeGroup>
+
+    ```bash npm
+    npm install
+    ```
+
+    ```bash pnpm
+    pnpm install
+    ```
+
+    ```bash yarn
+    yarn install
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Run the build">
+    <CodeGroup>
+
+    ```bash npm
+    npm run build
+    ```
+
+    ```bash pnpm
+    pnpm run build
+    ```
+
+    ```bash yarn
+    yarn build
+    ```
+
+    </CodeGroup>
+
+    Astro compiles the project and writes all output to the `dist/` directory.
+  </Step>
+
+  <Step title="Preview the production build">
+    Before deploying, serve the `dist/` folder locally to verify the output looks correct.
+
+    <CodeGroup>
+
+    ```bash npm
+    npm run preview
+    ```
+
+    ```bash pnpm
+    pnpm run preview
+    ```
+
+    ```bash yarn
+    yarn preview
+    ```
+
+    </CodeGroup>
+
+    `astro preview` starts a local server that serves the built `dist/` folder, replicating the production environment.
+  </Step>
+</Steps>
+
+## What's in `dist/`
+
+After a successful build, the `dist/` directory contains:
+
+| Path | Description |
+| ---- | ----------- |
+| `dist/index.html` | The home page |
+| `dist/projects/index.html` | The projects page |
+| Static assets | Images and other files copied from `public/` |
+
+<Note>
+  Bootstrap CSS, Bootstrap Icons, and Google Fonts are all loaded from CDN in the `<head>` of `Layout.astro`. They are **not** bundled into `dist/`. This keeps the build output small and means no additional asset pipeline configuration is required.
+</Note>
+
+## Build errors to watch for
+
+Content collection Zod validation runs at build time. If a required field — such as `title` or `description` — is missing from a project entry's frontmatter, the build will fail immediately with a clear error message pointing to the offending file.
+
+Fix the frontmatter in the relevant file under `src/content/` and re-run the build.

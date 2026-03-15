@@ -1,97 +1,69 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Rsantana Portfolio"
+description: "Documentation for Ronald Santana's personal portfolio — a fast, minimal site built with Astro and Bootstrap."
 ---
 
-## Setting up
+## Overview
 
-Get your documentation site up and running in minutes.
+This is the documentation for **Rsantana Portfolio**, a personal portfolio website built by Ronald Santana. The site showcases web development projects using a clean, minimal design powered by [Astro](https://astro.build) and [Bootstrap 5](https://getbootstrap.com).
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Introduction" icon="circle-info" href="/introduction">
+    Learn about the portfolio project, its stack, and how it works.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get the site running locally in a few commands.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Project Structure" icon="folder-tree" href="/structure/overview">
+    Understand how files and directories are organized.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Adding Projects" icon="plus" href="/customization/adding-projects">
+    Learn how to add new portfolio projects using content collections.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Tech stack
 
-Everything you need to create world-class documentation.
+The portfolio is built with modern, lightweight tools designed for fast static sites:
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+| Technology | Purpose |
+|---|---|
+| [Astro 5](https://astro.build) | Static site framework |
+| [Bootstrap 5.3](https://getbootstrap.com) | Responsive CSS framework |
+| [Bootstrap Icons](https://icons.getbootstrap.com) | Icon library |
+| [Onest Font](https://fonts.google.com/specimen/Onest) | Typography |
+| TypeScript | Type-safe configuration |
 
-## Need inspiration?
+## Key features
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Content collections" icon="database">
+    Projects are managed as Markdown files with type-safe frontmatter schema validation via Zod.
+  </Card>
+  <Card title="Smooth animations" icon="wand-magic-sparkles">
+    CSS `fadeInUp` animations play on page load and as content scrolls into view via IntersectionObserver.
+  </Card>
+  <Card title="Responsive layout" icon="mobile">
+    Bootstrap 5 grid and utility classes ensure the site looks great on all screen sizes.
+  </Card>
+  <Card title="Static output" icon="bolt">
+    Astro builds a fully static site — no JavaScript framework overhead, just fast HTML and CSS.
+  </Card>
+</CardGroup>
+
+## Explore the docs
+
+<CardGroup cols={2}>
+  <Card title="Components reference" icon="puzzle-piece" href="/structure/components">
+    Understand each Astro component and its props.
+  </Card>
+  <Card title="Styling guide" icon="palette" href="/customization/styling">
+    Customize colors, fonts, and animations.
+  </Card>
+  <Card title="Layout customization" icon="layout" href="/customization/layout">
+    Modify the page layout and structure.
+  </Card>
+  <Card title="Deployment" icon="cloud-arrow-up" href="/deployment/deploy">
+    Deploy the portfolio to Netlify, Vercel, or GitHub Pages.
+  </Card>
+</CardGroup>

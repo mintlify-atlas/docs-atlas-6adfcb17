@@ -1,0 +1,172 @@
+---
+title: 'Deploy'
+description: 'Deploy the rsantana portfolio to Netlify, Vercel, or GitHub Pages.'
+---
+
+Because the portfolio builds to a fully static site, it can be hosted on any static hosting platform. The sections below cover the three most common options.
+
+<Note>
+  Bootstrap CSS, Bootstrap Icons, and Google Fonts are loaded from CDN. No additional CDN configuration is required on any of the platforms below.
+</Note>
+
+## Platforms
+
+<Tabs>
+  <Tab title="Netlify">
+    Netlify connects directly to your GitHub repository and deploys automatically on every push to `main`.
+
+    <Steps>
+      <Step title="Sign in to Netlify">
+        Go to [netlify.com](https://netlify.com) and sign in with your GitHub account.
+      </Step>
+
+      <Step title="Create a new site">
+        From the Netlify dashboard, click **Add new site** → **Import an existing project**.
+      </Step>
+
+      <Step title="Connect your repository">
+        Select **GitHub** as the Git provider, then choose the `Iceheop/rsantana` repository.
+      </Step>
+
+      <Step title="Configure build settings">
+        Netlify may auto-detect the Astro framework. Confirm or enter the following:
+
+        | Setting | Value |
+        | ------- | ----- |
+        | Build command | `npm run build` |
+        | Publish directory | `dist` |
+
+      </Step>
+
+      <Step title="Deploy">
+        Click **Deploy site**. Netlify runs the build and publishes the `dist/` folder.
+
+        After the first deploy, every push to the `main` branch triggers a new build and deploy automatically.
+      </Step>
+    </Steps>
+
+    <Tip>
+      You can configure a custom domain from the **Domain settings** section of your Netlify site dashboard.
+    </Tip>
+  </Tab>
+
+  <Tab title="Vercel">
+    Vercel auto-detects Astro projects and requires zero configuration beyond connecting the repository.
+
+    <Steps>
+      <Step title="Sign in to Vercel">
+        Go to [vercel.com](https://vercel.com) and sign in with your GitHub account.
+      </Step>
+
+      <Step title="Create a new project">
+        From the Vercel dashboard, click **Add New** → **Project**.
+      </Step>
+
+      <Step title="Import your repository">
+        Find `Iceheop/rsantana` in the repository list and click **Import**.
+      </Step>
+
+      <Step title="Deploy">
+        Vercel automatically detects the Astro framework and sets:
+
+        | Setting | Value |
+        | ------- | ----- |
+        | Build command | `npm run build` |
+        | Output directory | `dist` |
+
+        Click **Deploy**. Vercel builds the project and provides a live URL.
+
+        Like Netlify, Vercel redeploys automatically on every push to `main`.
+      </Step>
+    </Steps>
+
+    <Tip>
+      Vercel also creates preview deployments for every pull request, which is useful for reviewing changes before merging.
+    </Tip>
+  </Tab>
+
+  <Tab title="GitHub Pages">
+    GitHub Pages hosts static sites directly from a GitHub repository. Deployment is handled by a GitHub Actions workflow.
+
+    <Warning>
+      GitHub Pages serves your site at `https://Iceheop.github.io/rsantana/` (a sub-path), not at the root. You **must** set `site` and `base` in `astro.config.mjs` or all internal links and assets will break.
+    </Warning>
+
+    <Steps>
+      <Step title="Update astro.config.mjs">
+        Add the `site` and `base` options so Astro generates correct URLs for the sub-path:
+
+        ```js astro.config.mjs
+        import { defineConfig } from 'astro/config';
+
+        export default defineConfig({
+          site: 'https://Iceheop.github.io',
+          base: '/rsantana',
+        });
+        ```
+      </Step>
+
+      <Step title="Add the GitHub Actions workflow">
+        Create the file `.github/workflows/deploy.yml` in your repository with the official Astro GitHub Pages action:
+
+        ```yaml .github/workflows/deploy.yml
+        name: Deploy to GitHub Pages
+
+        on:
+          push:
+            branches:
+              - main
+          workflow_dispatch:
+
+        permissions:
+          contents: read
+          pages: write
+          id-token: write
+
+        jobs:
+          build:
+            runs-on: ubuntu-latest
+            steps:
+              - name: Checkout
+                uses: actions/checkout@v4
+              - name: Set up Node
+                uses: actions/setup-node@v4
+                with:
+                  node-version: 20
+                  cache: npm
+              - name: Install dependencies
+                run: npm install
+              - name: Build
+                run: npm run build
+              - name: Upload artifact
+                uses: actions/upload-pages-artifact@v3
+                with:
+                  path: dist/
+
+          deploy:
+            needs: build
+            runs-on: ubuntu-latest
+            environment:
+              name: github-pages
+              url: ${{ steps.deployment.outputs.page_url }}
+            steps:
+              - name: Deploy to GitHub Pages
+                id: deployment
+                uses: actions/deploy-pages@v4
+        ```
+      </Step>
+
+      <Step title="Enable GitHub Pages in repository settings">
+        In your repository on GitHub, go to **Settings** → **Pages**.
+
+        Under **Source**, select **GitHub Actions**.
+      </Step>
+
+      <Step title="Push and deploy">
+        Commit the workflow file and your updated `astro.config.mjs`, then push to `main`. The Actions workflow runs the build and deploys the `dist/` folder to GitHub Pages.
+
+        Your site will be available at `https://Iceheop.github.io/rsantana/`.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>

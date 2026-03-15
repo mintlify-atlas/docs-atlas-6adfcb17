@@ -1,0 +1,104 @@
+---
+title: "Introduction"
+description: "Ronald Santana's personal portfolio website built with Astro 5 and Bootstrap 5."
+---
+
+This is the documentation for the **Rsantana Portfolio** — a personal portfolio website built by Ronald Santana. The site presents his work as a web developer specializing in HTML, CSS, JavaScript, Astro, Bootstrap, and WordPress.
+
+<Tip>
+  Ready to get the project running? Head to the [Quickstart](/quickstart) to be up and running in minutes.
+</Tip>
+
+## Tech stack
+
+| Technology | Version | Purpose |
+|---|---|---|
+| [Astro](https://astro.build) | 5 | Static site framework |
+| [Bootstrap](https://getbootstrap.com) | 5.3.3 | Responsive CSS framework |
+| [Bootstrap Icons](https://icons.getbootstrap.com) | 1.11.3 | Icon library |
+| [Onest](https://fonts.google.com/specimen/Onest) | — | Primary typeface (Google Fonts) |
+| TypeScript | — | Type-safe content collection schema |
+
+## Site structure
+
+The portfolio is made up of two pages:
+
+- **`/`** — Home page. Renders the `Nav`, `Header`, `Projects`, and `Footer` components.
+- **`/projects`** — Full projects listing. Renders `Nav`, a breadcrumb, `Projects`, and `Footer`.
+
+Both pages use the shared `Layout.astro` base layout, which injects Bootstrap CSS/JS, Bootstrap Icons, the Onest font, and a global scroll animation observer.
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Content collections" icon="database">
+    Projects are stored as Markdown files under `src/content/projects/`. Each file is validated against a Zod schema that enforces typed frontmatter fields: `title`, `description`, `pubDate`, `heroImage`, `tag`, and `url`.
+  </Card>
+  <Card title="CSS animations" icon="wand-magic-sparkles">
+    Elements with the `fade-in-up` class are observed by an `IntersectionObserver` registered in `Layout.astro`. The `visible` class is added when an element enters the viewport, triggering a CSS transition.
+  </Card>
+  <Card title="Responsive layout" icon="mobile">
+    Bootstrap 5 grid and utility classes keep the site readable on all screen sizes. The main content area is capped at `650px` and centered horizontally.
+  </Card>
+  <Card title="Static output" icon="bolt">
+    Astro compiles the site to plain HTML, CSS, and minimal JavaScript. There is no client-side framework, which results in fast page loads and simple deployment to any static host.
+  </Card>
+</CardGroup>
+
+## Base layout
+
+`src/layouts/Layout.astro` accepts a single `title` prop and serves as the shell for every page:
+
+```astro src/layouts/Layout.astro
+---
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+```
+
+It loads the following external resources from CDN:
+
+- Bootstrap 5.3.3 CSS and JS bundle
+- Bootstrap Icons 1.11.3
+- Onest variable font (100–900 weight)
+
+<Note>
+  CSS custom properties `--primary` (`#1E1E1E`) and `--bg` (`#f1f1f1`) are defined in the global stylesheet inside `Layout.astro`. Override them to retheme the site.
+</Note>
+
+## Content schema
+
+Project entries live in `src/content/projects/` and are validated by the schema defined in `src/content/config.ts`:
+
+```typescript src/content/config.ts
+import { defineCollection, z } from 'astro:content';
+
+const projectsCollection = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.string().or(z.date()).transform((val) => new Date(val)),
+    updatedDate: z.string().optional().transform((str) => (str ? new Date(str) : undefined)),
+    heroImage: z.string().optional(),
+    tag: z.string().optional(),
+    url: z.string().optional(),
+  }),
+});
+
+export const collections = { 'projects': projectsCollection };
+```
+
+An example entry:
+
+```markdown src/content/projects/Edudu.md
+---
+title: 'Edudu'
+description: 'Plataforma educativa para niños'
+pubDate: '2023-10-25'
+heroImage: '/Edudu.png'
+tag: 'Web developher'
+url: 'https://edudu-platform.netlify.app/'
+---
+```

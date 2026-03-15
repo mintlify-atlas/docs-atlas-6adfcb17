@@ -1,0 +1,246 @@
+---
+title: 'Components'
+description: 'Reference for every Astro component in src/layouts/ and src/components/.'
+---
+
+The portfolio is composed of six Astro components. `Layout.astro` lives in `src/layouts/` and acts as the HTML shell; the remaining five are in `src/components/` and are composed inside pages.
+
+## Layout.astro
+
+**Path:** `src/layouts/Layout.astro`
+
+The base HTML layout used by every page. It accepts a `title` prop, builds the full `<html>` document, and is responsible for loading all external dependencies and defining global styles.
+
+**Props**
+
+```typescript
+interface Props {
+  title: string;
+}
+```
+
+<ParamField path="title" type="string" required>
+  Sets the `<title>` tag in the document `<head>`.
+</ParamField>
+
+**External dependencies loaded**
+
+- Bootstrap 5.3.3 CSS — `cdn.jsdelivr.net`
+- Bootstrap Icons 1.11.3 — `cdn.jsdelivr.net`
+- Bootstrap 5.3.3 JS bundle — `cdn.jsdelivr.net`
+- Onest font (weights 100–900) — Google Fonts
+
+**Global CSS variables**
+
+```css
+:root {
+  --primary: #1E1E1E;
+  --bg: #f1f1f1;
+}
+```
+
+**Animation utility classes**
+
+`Layout.astro` defines two animation systems used across components:
+
+| Class | Mechanism | Behaviour |
+|-------|-----------|-----------|
+| `animate-on-load` | CSS `@keyframes fadeInUp` | Plays on page load; use with `animate-delay-1` through `animate-delay-4` |
+| `animate-delay-1` … `animate-delay-4` | `animation-delay` increments (0.1 s–0.4 s) | Staggers `animate-on-load` elements |
+| `fade-in-up` | IntersectionObserver + CSS transition | Triggers when the element scrolls into view |
+
+**Usage**
+
+```astro
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="Ronald Santana - Portfolio">
+  <!-- page content -->
+</Layout>
+```
+
+---
+
+## Nav.astro
+
+**Path:** `src/components/Nav.astro`
+
+The site-wide navigation bar. Renders a Bootstrap flex row with the site logo linked to the home page.
+
+**Props:** none
+
+**Key details**
+
+- Logo source: `/favicon.svg` (50 × 50 px)
+- Bootstrap utility classes: `d-flex align-items-center justify-content-between py-4 mb-md-5 mb-lg-5`
+- Entrance animation: `animate-on-load animate-delay-1`
+
+**Usage**
+
+```astro
+---
+import Nav from "../components/Nav.astro";
+---
+<Nav />
+```
+
+---
+
+## Header.astro
+
+**Path:** `src/components/Header.astro`
+
+The hero section displayed on the home page. Shows the developer's role and name as an `<h1>`, followed by a bio paragraph that lists the core technology skills.
+
+**Props:** none
+
+**Key details**
+
+- Developer name: Ronald Santana
+- Technologies mentioned: HTML, CSS, JavaScript, Astro, Bootstrap, WordPress
+- Entrance animation: `animate-on-load animate-delay-2`
+
+**Usage**
+
+```astro
+---
+import Header from "../components/Header.astro";
+---
+<Header />
+```
+
+---
+
+## Projects.astro
+
+**Path:** `src/components/Projects.astro`
+
+Fetches all entries from the `projects` content collection and renders them as a Bootstrap grid of `Card` components.
+
+**Props:** none
+
+**How it works**
+
+```astro
+---
+import { getCollection } from 'astro:content';
+import Card from "./Card.astro";
+const projects = await getCollection('projects');
+---
+<section id="projects" class="animate-on-load animate-delay-3">
+    <header class="mb-4">
+        <h2 class="m-0 fs-4 fw-bold">Proyectos</h2>
+    </header>
+    <section class="row gap-3">
+        {projects.map((project: any) => (
+            <Card
+                src={project.data.heroImage}
+                description={project.data.description}
+                title={project.data.title}
+                tag={project.data.tag}
+                url={project.data.url}
+            />
+        ))}
+    </section>
+</section>
+```
+
+<Note>
+`getCollection('projects')` reads every `.md` file from `src/content/projects/` and validates it against the Zod schema defined in `src/content/config.ts`. New projects appear automatically once you add a new Markdown file.
+</Note>
+
+**Key details**
+
+- Section id: `projects` (used as an anchor target)
+- Layout: Bootstrap `row gap-3`
+- Entrance animation: `animate-on-load animate-delay-3`
+
+**Usage**
+
+```astro
+---
+import Projects from "../components/Projects.astro";
+---
+<Projects />
+```
+
+---
+
+## Card.astro
+
+**Path:** `src/components/Card.astro`
+
+Displays a single project as a clickable card. The image is shown in a 16:9 aspect-ratio container; the title and tag appear below it. The entire card links to an external URL that opens in a new tab.
+
+**Props**
+
+```typescript
+interface Props {
+    src: string;
+    description: string;
+    title: string;
+    tag: string;
+    url: string;
+}
+```
+
+<ParamField path="src" type="string" required>
+  Path or URL to the project hero image. Referenced as the `src` attribute of the `<img>` element.
+</ParamField>
+
+<ParamField path="description" type="string" required>
+  Alt text for the hero image. Used for accessibility.
+</ParamField>
+
+<ParamField path="title" type="string" required>
+  Project name. Rendered as an `<h2>` below the image.
+</ParamField>
+
+<ParamField path="tag" type="string" required>
+  Project category or role label. Rendered as a secondary `<h2>` below the title.
+</ParamField>
+
+<ParamField path="url" type="string" required>
+  External URL for the project. The entire card is wrapped in an `<a>` that opens this URL in a new tab with `rel="noopener noreferrer"`.
+</ParamField>
+
+**Usage**
+
+```astro
+---
+import Card from "./Card.astro";
+---
+<Card
+    src="/Edudu.png"
+    description="Plataforma educativa para niños"
+    title="Edudu"
+    tag="Web developher"
+    url="https://edudu-platform.netlify.app/"
+/>
+```
+
+**Layout details**
+
+- Image container: Bootstrap `ratio ratio-16x9 rounded-2 overflow-hidden position-relative`
+- Image: `img-fluid object-fit-scale rounded-2`
+- External link: `target="_blank" rel="noopener noreferrer"`
+
+---
+
+## Footer.astro
+
+**Path:** `src/components/Footer.astro`
+
+The site footer, rendered at the bottom of every page.
+
+**Props:** none
+
+**Usage**
+
+```astro
+---
+import Footer from "../components/Footer.astro";
+---
+<Footer />
+```

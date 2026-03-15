@@ -1,0 +1,92 @@
+---
+title: 'Adding projects'
+description: 'How to add new projects to your portfolio by creating Markdown files in the content collection.'
+---
+
+Projects are stored as Markdown files in `src/content/projects/`. Each file represents one project card displayed on the home page and the `/projects` page. Astro reads these files at build time and validates them against the Zod schema in `src/content/config.ts`.
+
+## How to add a new project
+
+<Steps>
+  <Step title="Create a Markdown file">
+    Add a new `.md` file in `src/content/projects/`. Name it after your project using kebab-case or PascalCase — the filename is not shown to visitors.
+
+    ```
+    src/content/projects/MyNewProject.md
+    ```
+  </Step>
+
+  <Step title="Add the frontmatter fields">
+    Open the file and add the required and optional frontmatter fields at the top of the file between `---` delimiters.
+
+    ```markdown src/content/projects/MyNewProject.md
+    ---
+    title: 'My New Project'
+    description: 'A short description of the project'
+    pubDate: '2024-03-15'
+    heroImage: '/MyNewProject.png'
+    tag: 'Web Developer'
+    url: 'https://my-new-project.netlify.app/'
+    ---
+    ```
+  </Step>
+
+  <Step title="Place the hero image in /public/">
+    Copy your project's preview image into the `public/` directory at the root of the project. The path you set in `heroImage` must match the filename exactly.
+
+    ```
+    public/
+    └── MyNewProject.png
+    ```
+
+    The image is rendered using a 16:9 aspect ratio inside the project card.
+  </Step>
+
+  <Step title="Rebuild or restart the dev server">
+    The project card will automatically appear on both the home page (`/`) and the projects page (`/projects`) — no other files need to be edited.
+
+    ```bash
+    npm run dev
+    ```
+  </Step>
+</Steps>
+
+## Frontmatter field reference
+
+The schema is defined in `src/content/config.ts` using Zod. All fields listed as required must be present or the build will fail.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `title` | `string` | Yes | The project display name shown in the card heading. |
+| `description` | `string` | Yes | A short description of the project. Also used as the `alt` text for the hero image. |
+| `pubDate` | `string` (ISO date) or `Date` | Yes | Publication date of the project, e.g. `'2023-10-25'`. |
+| `updatedDate` | `string` | No | Date the project was last updated. Transformed to a `Date` object at build time if provided. |
+| `heroImage` | `string` | No | Root-relative path to the preview image stored in `public/`, e.g. `/MyProject.png`. |
+| `tag` | `string` | No | Category label displayed below the project title in the card, e.g. `'Web Developer'`. |
+| `url` | `string` | No | External URL that the card links to when clicked. |
+
+## Example project file
+
+The following is the real `Edudu.md` project file included in the portfolio:
+
+```markdown src/content/projects/Edudu.md
+---
+title: 'Edudu'
+description: 'Plataforma educativa para niños'
+pubDate: '2023-10-25'
+heroImage: '/Edudu.png'
+tag: 'Web developher'
+url: 'https://edudu-platform.netlify.app/'
+---
+```
+
+## Validation
+
+<Warning>
+Astro validates every file in `src/content/projects/` against the Zod schema in `src/content/config.ts` at build time. If a required field (`title`, `description`, or `pubDate`) is missing or has the wrong type, the build will throw an error and fail.
+</Warning>
+
+The schema transformation rules to be aware of:
+
+- `pubDate` accepts either a plain ISO date string (`'2023-10-25'`) or a `Date` object, and is always transformed to a `Date` at build time.
+- `updatedDate` is optional. When provided as a string it is also transformed to a `Date`; when omitted, it resolves to `undefined`.

@@ -1,0 +1,92 @@
+---
+title: 'Project structure overview'
+description: 'Directory layout and purpose of each folder in the Rsantana Portfolio project.'
+---
+
+The Rsantana Portfolio is an Astro 5 project with a focused, minimal directory structure. All source code lives under `src/`, static assets under `public/`, and configuration at the root.
+
+## Directory tree
+
+```text
+rsantana/
+├── astro.config.mjs
+├── package.json
+├── tsconfig.json
+├── public/
+│   └── (static assets: favicon.svg, logo.svg, Edudu.png)
+└── src/
+    ├── env.d.ts
+    ├── layouts/
+    │   └── Layout.astro
+    ├── pages/
+    │   ├── index.astro
+    │   ├── projects.astro
+    │   └── projects/
+    ├── components/
+    │   ├── Card.astro
+    │   ├── Footer.astro
+    │   ├── Header.astro
+    │   ├── Nav.astro
+    │   └── Projects.astro
+    └── content/
+        ├── config.ts
+        └── projects/
+            └── Edudu.md
+```
+
+## Root-level files
+
+| File | Purpose |
+|------|---------|
+| `astro.config.mjs` | Astro framework configuration (integrations, output mode, etc.) |
+| `package.json` | Project dependencies and npm scripts |
+| `tsconfig.json` | TypeScript compiler options for the project |
+
+## Top-level directories
+
+### `public/`
+
+Contains static assets that are copied as-is to the build output. Files here are served directly from the root URL without processing.
+
+Current assets:
+- `favicon.svg` — site favicon, also used as the logo in the navigation bar
+- `logo.svg` — site logo
+- `Edudu.png` — project hero image for the Edudu content entry
+
+### `src/`
+
+All application source code. Astro processes everything inside `src/` during the build.
+
+## `src/` sub-structure
+
+| Directory | Purpose |
+|-----------|---------|
+| `src/layouts/` | Base HTML shell shared across all pages |
+| `src/pages/` | File-based routes — each `.astro` file becomes a URL |
+| `src/components/` | Reusable UI components imported by pages |
+| `src/content/` | Type-safe content collections (Markdown project entries) |
+
+### `src/layouts/`
+
+Holds `Layout.astro`, the single base layout. It renders the full HTML document, loads Bootstrap 5 CSS/JS, the Onest font, Bootstrap Icons, and defines global CSS variables and animation utility classes. Every page wraps its content inside this layout.
+
+### `src/pages/`
+
+Astro's file-based router turns each file here into a route:
+
+| File | Route | Description |
+|------|-------|-------------|
+| `index.astro` | `/` | Home page — Nav, Header, Projects section, Footer |
+| `projects.astro` | `/projects` | Dedicated projects page with breadcrumb navigation |
+
+<Note>
+The `projects/` sub-directory is reserved for any future dynamic project detail routes.
+</Note>
+
+### `src/components/`
+
+Self-contained Astro components that are composed together in pages. See [Components](/structure/components) for full documentation of each component.
+
+### `src/content/`
+
+Astro's content collections layer. The `config.ts` file defines the Zod schema that validates every Markdown entry. The `projects/` sub-directory holds one `.md` file per project. See [Content collections](/structure/content) for full documentation.
